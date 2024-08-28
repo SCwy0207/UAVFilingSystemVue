@@ -64,6 +64,8 @@
 
 <script setup>
 import { ref } from 'vue';
+import { PieChartOutlined, UserOutlined, TeamOutlined, FileOutlined } from '@ant-design/icons-vue';
+
 const collapsed = ref(false);
 const selectedKeys = ref(['1']);
 </script>

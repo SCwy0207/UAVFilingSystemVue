@@ -182,7 +182,8 @@
 import { ref, onMounted, getCurrentInstance } from 'vue';
 import axios from 'axios';
 import { message } from 'ant-design-vue';
-import { SmileOutlined, DownOutlined } from '@ant-design/icons-vue'; 
+import { SmileOutlined, DownOutlined } from '@ant-design/icons-vue';
+
 const open = ref(false);
 const confirmLoading = ref(false);
 
@@ -416,7 +417,7 @@ function handleOk() {
   const form = userFormRef.value;
   form.validate().then(() => {
     confirmLoading.value = true;
-    
+
     // 保存用户表数据
     axios.post(`${httpUrl}/users/save`, {
       email: userForm.value.email,
@@ -425,12 +426,20 @@ function handleOk() {
       phonenumber: userForm.value.phoneNumber,
       status: userForm.value.status,
       roleid: userForm.value.roleId
+    }).then(() => {
+      // 查询刚保存用户的 userid
+      return axios.get(`${httpUrl}/users/getUserid`, {
+        params: {
+          username: userForm.value.username
+        }
+      });
     }).then(response => {
-      const userId = response.data.userId; // 假设后端返回了 UserID
+      // 假设返回的数据包含 userid
+      const userId = response.data.userid; // 从查询结果中获取 userid
 
       // 保存用户信息表数据
       return axios.post(`${httpUrl}/userprofile/save`, {
-        userid: userId,
+        userId: userId,
         firstname: userForm.value.firstName,
         lastname: userForm.value.lastName,
         gender: userForm.value.gender,
@@ -445,11 +454,13 @@ function handleOk() {
       confirmLoading.value = false;
       message.error('用户新增失败');
     });
-    
+
   }).catch(() => {
     message.error('请填写完整的必填信息');
   });
 }
+
+
 function handleCancel() {
   console.log('取消按钮');
   open.value = false;

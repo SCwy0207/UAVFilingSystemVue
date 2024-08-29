@@ -28,8 +28,8 @@
                 <span>无人机授权管理</span>
               </span>
             </template>
-            <a-menu-item key="4">无人机类别管理</a-menu-item>
-            <a-menu-item key="5">地区通行管制</a-menu-item>
+            <a-menu-item key="4" @click="() => $router.push('/ACenter/drone-management')">无人机管理</a-menu-item>
+            <a-menu-item key="5">通行管制</a-menu-item>
           </a-sub-menu>
           <a-menu-item key="6">
             <file-outlined />

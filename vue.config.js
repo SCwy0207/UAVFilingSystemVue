@@ -26,5 +26,18 @@ module.exports = defineConfig({
         __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false), // 设置你的功能标志
       })
     ]
+  },
+  chainWebpack: config => {
+    config.module
+      .rule('vue')
+      .use('vue-loader')
+      .tap(options => {
+        options.compilerOptions = {
+          ...options.compilerOptions,
+          // 允许 JSX
+          plugins: ['jsx']
+        };
+        return options;
+      });
   }
 })

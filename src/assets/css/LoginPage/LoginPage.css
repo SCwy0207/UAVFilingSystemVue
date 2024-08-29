@@ -17,7 +17,7 @@
 }
 
 #LoginPage .head_Logo {
-  width: 38%;
+  width: 20%;
   position: fixed;
   top: 10%;
   left: 5%;
@@ -25,7 +25,7 @@
 
 #LoginPage .container {
   width: 30%;
-  height: 430px;
+  height: 450px;
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 5px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);

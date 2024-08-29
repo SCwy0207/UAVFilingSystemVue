@@ -14,11 +14,11 @@
         <div id="accountLoginS">
           <!-- 账号密码登录界面 -->
           <form @submit.prevent="login">
-            <label for="uname"><b>用户名</b></label>
+            <label for="uname"><b>&nbsp;用户名</b></label>
             <input type="text" placeholder="请输入用户名" v-model="username" required/><br/>
-            <label for="psw"><b>密码</b></label>
+            <label for="psw"><b>&nbsp;密码</b></label>
             <input type="password" placeholder="请输入密码" v-model="password" required/><br/>
-            <a href="javascript:void(0);" @click="register">立即注册</a><br /><br /><br/>
+            <a href="javascript:void(0);" style="text-decoration:none;" @click="register">&nbsp;立即注册</a><br /><br /><br/>
             <button type="submit">登录</button>
           </form>
         </div>

@@ -60,38 +60,43 @@
 
     <!-- 表格 -->
     <a-table 
-      :columns="manufacturerColumns" 
-      :data-source="data"
-      :pagination="{ current: pageNum, pageSize: pageSize, total: total, showSizeChanger: true, showQuickJumper: true }"
-      @change="handleTableChange"
-      class="components-table-demo-nested"
-    >
-      <template #expandedRowRender="{ record }">
-        <a-table :columns="modelColumns" :data-source="record.models" :pagination="false">
-          <template #bodyCell="{ column, record }">
-            <!-- 无人机型号的操作列 -->
-            <template v-if="column.key === 'operation'">
-              <span class="table-operation">
-                <a @click="editModel(record)">编辑型号</a>
-                <a-dropdown>
-                  <template #overlay>
-                    <a-menu>
-                      <a-menu-item @click="handleAddModel(record)">新增型号</a-menu-item>
-                      <a-menu-item @click="deleteModel(record)">删除型号</a-menu-item>
-                    </a-menu>
-                  </template>
-                  <a>
-                    更多
-                    <a-icon :icon="DownOutlined" />
-                  </a>
-                </a-dropdown>
-              </span>
-            </template>
-          </template>
-        </a-table>
-      </template>
+  :columns="manufacturerColumns" 
+  :data-source="data"
+  :pagination="{ current: pageNum, pageSize: pageSize, total: total, showSizeChanger: true, showQuickJumper: true }"
+  @change="handleTableChange"
+  @expand="(expanded, record) => expanded && loadDroneTypes(record.manufacturername, record)" 
+  class="components-table-demo-nested"
+>
 
-      <template #bodyCell="{ column, record }">
+    <template #expandedRowRender="{ record }">
+  <a-table 
+    :columns="modelColumns" 
+    :data-source="record.models" 
+    :pagination="false"
+  >
+  <template #bodyCell="{ column, record }">
+  <!-- 自定义是否允许飞行列 -->
+  <template v-if="column.key === 'allowflight'">
+    <div>
+      <span :style="{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', marginRight: '8px', backgroundColor: record.allowflight ? 'green' : 'red' }"></span>
+      <a-button  @click="toggleFlightStatus(record)">
+        {{ record.allowflight ? '允许飞行' : '禁止飞行' }}
+      </a-button>
+    </div>
+  </template>
+      <template v-if="column.key === 'operation'">
+        <span class="table-operation">
+          <a @click="editModel(record)">编辑型号</a>
+          <a style="margin-left: 8px;" @click="deleteModel(record)">删除型号</a>
+        </span>
+      </template>
+    </template>
+  </a-table>
+</template>
+
+
+
+      <template #bodyCell="{ column, record }" >
         <!-- 无人机厂商的操作列 -->
         <template v-if="column.key === 'operation'">
           <span class="table-operation">
@@ -99,7 +104,7 @@
             <a-dropdown>
               <template #overlay>
                 <a-menu>
-                  <a-menu-item @click="handleAddManufacturer()">新增厂商</a-menu-item>
+                  <a-menu-item @click="handleAddModel(record)">新增型号</a-menu-item>
                   <a-menu-item @click="deleteManufacturer(record)">删除厂商</a-menu-item>
                 </a-menu>
               </template>
@@ -119,7 +124,7 @@
 import { ref, onMounted, getCurrentInstance } from 'vue';
 import axios from 'axios';
 import { message } from 'ant-design-vue';
-import { DownOutlined } from '@ant-design/icons-vue';
+import {DownOutlined } from '@ant-design/icons-vue';
 
 const isManufacturerModalVisible = ref(false);
 const isModelModalVisible = ref(false);
@@ -155,10 +160,12 @@ const manufacturerColumns = [
 ];
 
 const modelColumns = [
-  { title: '型号名称', dataIndex: 'modelname', key: 'modelname' },
-  { title: '型号编号', dataIndex: 'modelid', key: 'modelid' },
+  { title: '型号名称', dataIndex: 'model', key: 'model' },
+  { title: '注册名称', dataIndex: 'registrationname', key: 'registrationname' },
+  { title: '是否允许飞行', dataIndex: 'allowflight', key: 'allowflight', scopedSlots: { customRender: 'allowflight' } },
   { title: '操作', key: 'operation', scopedSlots: { customRender: 'operation' } },
 ];
+
 
 function loadManufacturers() {
   axios.post(`${httpUrl}/manufacturers/listPage`, {
@@ -168,13 +175,48 @@ function loadManufacturers() {
     data.value = res.data.map((manufacturer, index) => ({
       ...manufacturer,
       key: index,
-      models: manufacturer.models || [] // 假设厂商数据中包含 models 数组
+      models: [] // 初始化 models 为一个空数组，等待加载
     }));
     total.value = res.total;
   }).catch(error => {
     console.error('数据加载错误:', error);
   });
 }
+
+function loadDroneTypes(manufacturerName, record) {
+  axios.post(`${httpUrl}/manufacturers/postDroneTypesByManufactrername`, null, {
+    params: {
+      manufacturername: manufacturerName
+    }
+  }).then(res => {
+    record.models = res.data.droneTypes.map((model, index) => ({
+      ...model,
+      key: index,
+      allowflight: model.allowflight // 确保 allowflight 是布尔值
+    }));
+  }).catch(error => {
+    console.error('获取型号数据失败:', error);
+  });
+}
+function toggleFlightStatus(record) {
+  record.allowflight = !record.allowflight;
+  axios.get(`${httpUrl}/dronetypes/modAllowflight`,{
+    params:{
+      model:record.model,
+      allowflight:record.allowflight
+    }
+  }).then(response => {
+    if(response.data){
+      console.log(record.model+"修改状态成功");
+    }else{
+      console.log(record.model+"修改状态失败");
+    }
+  }).catch(error => {
+    console.error('Error occurred:', error);
+  });
+}
+
+
 
 function handleSearch() {
   pageNum.value = 1;
@@ -186,15 +228,22 @@ function handleReset() {
   loadManufacturers();
 }
 
-function handleAddManufacturer() {
-  isManufacturerModalVisible.value = true;
-}
-
 function handleAddModel(record) {
-  // 设置当前选中的厂商 ID
-  modelForm.value.manufacturerId = record.id;
+  axios.post(`${httpUrl}/manufacturers/postDroneTypes`, {
+    manufacturerid: record.manufacturerid
+  }).then(res => {
+    // 将查询到的型号数据附加到厂商记录中
+    record.models = res.data.droneTypes.map((model, index) => ({
+      ...model,
+      key: index
+    }));
+  }).catch(error => {
+    console.error('获取型号数据失败:', error);
+  });
+  // 显示型号模态框
   isModelModalVisible.value = true;
 }
+
 
 function handleAddManufacturerOk() {
   manufacturerFormRef.value.validate().then(() => {
@@ -267,6 +316,7 @@ onMounted(() => {
 
 .gradient-button:hover {
   background: linear-gradient(135deg, #04befe, #6253e1);
+  color: #fff;
 }
 
 .gradient-button:focus {

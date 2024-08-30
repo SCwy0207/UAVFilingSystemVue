@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import './assets/css/global.css'
+import * as Icons from '@ant-design/icons-vue';
 
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
@@ -23,5 +24,10 @@ app.use(Antd);
 // 使用路由
 app.use(router);
 
+Object.keys(Icons).forEach(key => {
+    app.component(key, Icons[key]);
+  });
+
 // 挂载应用
 app.mount('#app');
+

@@ -46,55 +46,63 @@
       cancel-text="取消"
     >
       <a-form :model="modelForm" layout="vertical" :rules="modelRules" ref="modelFormRef">
-        <a-form-item label="型号名称" name="modelname" required>
-          <a-input v-model:value="modelForm.modelname" placeholder="请输入型号名称" />
+        <a-form-item label="型号名称" name="model" required>
+          <a-input v-model:value="modelForm.model" placeholder="请输入型号名称" />
         </a-form-item>
-        <a-form-item label="重量" name="weight" required>
-          <a-input v-model:value="modelForm.weight" placeholder="请输入重量" />
+        <a-form-item label="注册名称" name="registrationname" required>
+          <a-input v-model:value="modelForm.registrationname" placeholder="请输入注册名称" />
         </a-form-item>
-        <a-form-item label="续航时间" name="batteryLife" required>
-          <a-input v-model:value="modelForm.batteryLife" placeholder="请输入续航时间" />
+        <a-form-item label="是否允许飞行" name="allowflight" required>
+          <a-switch v-model:checked="modelForm.allowflight" />
         </a-form-item>
       </a-form>
     </a-modal>
 
     <!-- 表格 -->
     <a-table 
-  :columns="manufacturerColumns" 
-  :data-source="data"
-  :pagination="{ current: pageNum, pageSize: pageSize, total: total, showSizeChanger: true, showQuickJumper: true }"
-  @change="handleTableChange"
-  @expand="(expanded, record) => expanded && loadDroneTypes(record.manufacturername, record)" 
-  class="components-table-demo-nested"
->
+      :columns="manufacturerColumns" 
+      :data-source="data"
+      :pagination="{ current: pageNum, pageSize: pageSize, total: total, showSizeChanger: true, showQuickJumper: true ,locale: {
+      items_per_page: '条/页',
+      jump_to: '跳至',
+      page: '页',
+      prev_page: '上一页',
+      next_page: '下一页',
+      prev_5: '向前 5 页',
+      next_5: '向后 5 页',
+      prev_3: '向前 3 页',
+      next_3: '向后 3 页'
+    } }"
+      @change="handleTableChange"
+      @expand="(expanded, record) => expanded && loadDroneTypes(record.manufacturername, record)" 
+      class="components-table-demo-nested"
+    >
 
-    <template #expandedRowRender="{ record }">
-  <a-table 
-    :columns="modelColumns" 
-    :data-source="record.models" 
-    :pagination="false"
-  >
-  <template #bodyCell="{ column, record }">
-  <!-- 自定义是否允许飞行列 -->
-  <template v-if="column.key === 'allowflight'">
-    <div>
-      <span :style="{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', marginRight: '8px', backgroundColor: record.allowflight ? 'green' : 'red' }"></span>
-      <a-button  @click="toggleFlightStatus(record)">
-        {{ record.allowflight ? '允许飞行' : '禁止飞行' }}
-      </a-button>
-    </div>
-  </template>
-      <template v-if="column.key === 'operation'">
-        <span class="table-operation">
-          <a @click="editModel(record)">编辑型号</a>
-          <a style="margin-left: 8px;" @click="deleteModel(record)">删除型号</a>
-        </span>
+      <template #expandedRowRender="{ record }">
+        <a-table 
+          :columns="modelColumns" 
+          :data-source="record.models" 
+          :pagination="false"
+        >
+          <template #bodyCell="{ column, record }">
+            <!-- 自定义是否允许飞行列 -->
+            <template v-if="column.key === 'allowflight'">
+              <div>
+                <span :style="{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', marginRight: '8px', backgroundColor: record.allowflight ? 'green' : 'red' }"></span>
+                <a-button  @click="toggleFlightStatus(record)">
+                  {{ record.allowflight ? '允许飞行' : '禁止飞行' }}
+                </a-button>
+              </div>
+            </template>
+            <template v-if="column.key === 'operation'">
+              <span class="table-operation">
+                <a @click="editModel(record)">编辑型号</a>
+                <a style="margin-left: 8px;" @click="deleteModel(record)">删除型号</a>
+              </span>
+            </template>
+          </template>
+        </a-table>
       </template>
-    </template>
-  </a-table>
-</template>
-
-
 
       <template #bodyCell="{ column, record }" >
         <!-- 无人机厂商的操作列 -->
@@ -119,6 +127,7 @@
     </a-table>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted, getCurrentInstance } from 'vue';
@@ -147,9 +156,10 @@ const manufacturerForm = ref({
 });
 
 const modelForm = ref({
-  modelname: '',
-  weight: '',
-  batteryLife: ''
+  model: '',
+  registrationname: '',
+  allowflight: false,
+  manufacturerid: ''
 });
 
 const manufacturerColumns = [
@@ -182,22 +192,58 @@ function loadManufacturers() {
     console.error('数据加载错误:', error);
   });
 }
-
+// 获取型号数据的方法
 function loadDroneTypes(manufacturerName, record) {
   axios.post(`${httpUrl}/manufacturers/postDroneTypesByManufactrername`, null, {
     params: {
       manufacturername: manufacturerName
     }
   }).then(res => {
-    record.models = res.data.droneTypes.map((model, index) => ({
-      ...model,
-      key: index,
-      allowflight: model.allowflight // 确保 allowflight 是布尔值
-    }));
+    if (res.data && res.data.droneTypes) {
+      // 更新型号数据
+      record.models = res.data.droneTypes.map((model, index) => ({
+        ...model,
+        key: index,
+        allowflight: model.allowflight // 确保 allowflight 是布尔值
+      }));
+    } else {
+      // 处理没有型号数据的情况
+      record.models = [];
+    }
   }).catch(error => {
     console.error('获取型号数据失败:', error);
   });
 }
+
+// 处理新增型号的函数
+function handleAddModelOk() {
+  modelFormRef.value.validate().then(() => {
+    confirmLoading.value = true;
+    axios.post(`${httpUrl}/dronetypes/save`, modelForm.value)
+      .then(() => {
+        message.success('型号新增成功');
+        isModelModalVisible.value = false;
+        confirmLoading.value = false;
+        
+        // 找到对应的厂商记录
+        const manufacturerRecord = data.value.find(item => item.manufacturername === modelForm.value.manufacturername);
+
+        if (manufacturerRecord) {
+          // 重新加载该厂商下的型号数据
+          loadDroneTypes(manufacturerRecord.manufacturername, manufacturerRecord);
+        } else {
+          console.error('无法找到对应的厂商记录');
+        }
+
+      })
+      .catch(error => {
+        console.error('新增型号失败:', error);
+        confirmLoading.value = false;
+      });
+  });
+}
+
+
 function toggleFlightStatus(record) {
   record.allowflight = !record.allowflight;
   axios.get(`${httpUrl}/dronetypes/modAllowflight`,{
@@ -220,35 +266,41 @@ function toggleFlightStatus(record) {
 
 function handleSearch() {
   pageNum.value = 1;
-  loadManufacturers();
+  axios.post(`${httpUrl}/manufacturers/listPage`, {
+    pageNum: pageNum.value,
+    pageSize: pageSize.value,
+    param: {
+      manufacturername: searchText.value
+    }
+  }).then((response) => {
+    const { data: manufacturers, total: totalItems } = response.data || {};
+    data.value = manufacturers.map((manufacturer, index) => ({
+      ...manufacturer,
+      key: index,
+      models: [] // 初始化 models 为一个空数组，等待加载
+    }));
+    total.value = totalItems || 0;
+  }).catch((error) => {
+    console.error('查询制造商失败:', error);
+  });
 }
+
 
 function handleReset() {
   searchText.value = '';
   loadManufacturers();
 }
 
-function handleAddModel(record) {
-  axios.post(`${httpUrl}/manufacturers/postDroneTypes`, {
-    manufacturerid: record.manufacturerid
-  }).then(res => {
-    // 将查询到的型号数据附加到厂商记录中
-    record.models = res.data.droneTypes.map((model, index) => ({
-      ...model,
-      key: index
-    }));
-  }).catch(error => {
-    console.error('获取型号数据失败:', error);
-  });
-  // 显示型号模态框
-  isModelModalVisible.value = true;
-}
 
+function handleAddManufacturer(){
+  console.log('新增按钮被点击');
+  isManufacturerModalVisible.value = true;
+}
 
 function handleAddManufacturerOk() {
   manufacturerFormRef.value.validate().then(() => {
     confirmLoading.value = true;
-    axios.post(`${httpUrl}/manufacturer/add`, manufacturerForm.value).then(() => {
+    axios.post(`${httpUrl}/manufacturers/save`, manufacturerForm.value).then(() => {
       message.success('厂商新增成功');
       isManufacturerModalVisible.value = false;
       confirmLoading.value = false;
@@ -260,20 +312,34 @@ function handleAddManufacturerOk() {
   });
 }
 
-function handleAddModelOk() {
-  modelFormRef.value.validate().then(() => {
-    confirmLoading.value = true;
-    axios.post(`${httpUrl}/model/add`, modelForm.value).then(() => {
-      message.success('型号新增成功');
-      isModelModalVisible.value = false;
-      confirmLoading.value = false;
-      loadManufacturers();
-    }).catch(error => {
-      console.error('新增型号失败:', error);
-      confirmLoading.value = false;
+async function handleAddModel(record) {
+  try {
+    // 获取厂商名称
+    const manufacturerName = record.manufacturername;
+
+    // 根据厂商名称查询对应的manufacturerid
+    const response = await axios.get(`${httpUrl}/manufacturers/getManufactureridByManufacturerName`, {
+      params: {
+        manufacturername: manufacturerName
+      }
     });
-  });
+
+    if (response.data && response.data.manufacturerid) {
+      // 设置modelForm中的manufacturerid
+      modelForm.value.manufacturerid = response.data.manufacturerid;
+
+      // 显示型号模态框
+      isModelModalVisible.value = true;
+    } else {
+      message.error('未能找到对应的厂商ID,请检查网络或联系管理员');
+    }
+  } catch (error) {
+    console.error('查询厂商ID失败:', error);
+    message.error('查询厂商ID时发生错误');
+  }
 }
+
+
 
 function handleManufacturerModalCancel() {
   isManufacturerModalVisible.value = false;

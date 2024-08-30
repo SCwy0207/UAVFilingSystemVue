@@ -27,6 +27,7 @@
   position: relative;
   z-index: 1;
 }
+
 </style>
 
 <template>
@@ -50,6 +51,7 @@
         @cancel="handleCancel"
         ok-text="确认"
         cancel-text="取消"
+        style="top:1%;"
       >
         <a-form :model="userForm" layout="vertical" :rules="rules" ref="userFormRef">
           <!-- 必填项 -->
@@ -351,8 +353,7 @@ function handleSearch() {
   // 重置页码到第一页
   pageNum.value = 1;
 
-  axios
-    .post(`${httpUrl}/users/listPageT`, {
+  axios.post(`${httpUrl}/users/listPageT`, {
       pageNum: pageNum.value,
       pageSize: pageSize.value,
       param: {

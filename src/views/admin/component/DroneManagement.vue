@@ -134,7 +134,7 @@
               <template #overlay>
                 <a-menu>
                   <a-menu-item @click="handleAddModel(record)">新增型号</a-menu-item>
-                  <a-menu-item @click="deleteManufacturer(record)">删除厂商</a-menu-item>
+                  <a-menu-item @click="confirmDeleteManufacturer(record)">删除厂商</a-menu-item>
                 </a-menu>
               </template>
               <a>
@@ -153,7 +153,7 @@
 <script setup>
 import { ref, onMounted, getCurrentInstance } from 'vue';
 import axios from 'axios';
-import { message } from 'ant-design-vue';
+import { Modal,message } from 'ant-design-vue';
 import {DownOutlined } from '@ant-design/icons-vue';
 
 const isManufacturerModalVisible = ref(false);
@@ -223,7 +223,7 @@ function loadManufacturers() {
     console.error('数据加载错误:', error);
   });
 }
-// 获取型号数据的方法
+// 折叠菜单获取型号数据的方法
 function loadDroneTypes(manufacturerName, record) {
   axios.post(`${httpUrl}/manufacturers/postDroneTypesByManufactrername`, null, {
     params: {
@@ -273,6 +273,91 @@ function handleAddModelOk() {
       });
   });
 }
+
+// 获取厂商下的型号数量
+async function getModelCountByManufacturer(manufacturerName) {
+  try {
+    const response = await axios.post(`${httpUrl}/manufacturers/postDroneTypesByManufactrername`, null, {
+      params: { manufacturername: manufacturerName}
+    });
+    if (response.data && response.data.droneTypes) {
+      return response.data.droneTypes.length;
+    }
+    return 0;
+  } catch (error) {
+    console.error('获取型号数量失败:', error);
+    return 0;
+  }
+}
+
+// 确认删除函数
+async function confirmDeleteManufacturer(record) {
+  const modelCount = await getModelCountByManufacturer(record.manufacturername);
+
+  Modal.confirm({
+    title: '确认删除',
+    content: `你确定要删除厂商 "${record.manufacturername}" 吗？该厂商下面有 ${modelCount} 个型号。`,
+    okText: '确认',
+    cancelText: '取消',
+    onOk() {
+      // 用户点击确认后执行删除
+      deleteManufacturer(record);
+    },
+    onCancel() {
+      // 用户点击取消的逻辑（如果有）
+      console.log('取消删除');
+    }
+  });
+}
+
+async function deleteManufacturer(record) {
+  try {
+    // 确认 record.manufacturername 是否正确
+    const response = await axios.get(`${httpUrl}/manufacturers/getManufactureridByManufacturerName`, {
+      params: { manufacturername: record.manufacturername }  // 确保属性名一致
+    });
+    const manufacturerid = response.data.manufacturerid;
+
+    await axios.delete(`${httpUrl}/manufacturers/delete`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: { manufacturerid } // 传递 manufacturerid
+    });
+
+    console.log("厂商删除成功");
+    loadManufacturers(); // 刷新厂商列表
+  } catch (error) {
+    console.error('厂商删除失败:', error);
+  }
+}
+
+
+async function deleteModel(record) {
+  try {
+    const manufacturernameRes=axios.get(`${httpUrl}/dronetypes/getManufacturerNameByModel`,{
+      params:{model:record.model}
+    })
+    const response = await axios.get(`${httpUrl}/dronetypes/getDronetypeidByModel`, {
+      params: { model: record.model }
+    });
+    const dronetypeid = response.data.dronetypeid; 
+
+    await axios.delete(`${httpUrl}/dronetypes/delete`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: { dronetypeid } // 将 dronetypeid 包装在 JSON 对象中发送
+    });
+
+    console.log('型号删除成功');
+    loadDroneTypes(manufacturernameRes.data.manufacturername, record);
+  } catch (error) {
+    console.error('型号删除失败:', error);
+  }
+}
+
+
 
 
 function toggleFlightStatus(record) {

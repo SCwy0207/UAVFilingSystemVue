@@ -440,7 +440,7 @@ function handleOk() {
 
       // 保存用户信息表数据
       return axios.post(`${httpUrl}/userprofile/save`, {
-        userId: userId,
+        userid: userId,
         firstname: userForm.value.firstName,
         lastname: userForm.value.lastName,
         gender: userForm.value.gender,

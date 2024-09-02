@@ -58,6 +58,27 @@
       </a-form>
     </a-modal>
 
+  <!-- 编辑型号模态框 -->
+<a-modal
+  title="编辑型号"
+  :open="isEditModelModalVisible"
+  @ok="handleEditModelOk"
+  :confirmLoading="confirmLoading"
+  @cancel="handleEditModelModalCancel"
+  ok-text="确认"
+  cancel-text="取消"
+>
+  <a-form :model="editModelForm" layout="vertical" :rules="modelRules" ref="editModelFormRef">
+    <a-form-item label="型号名称" name="model" required>
+      <a-input v-model:value="editModelForm.model" placeholder="请输入型号名称" />
+    </a-form-item>
+    <a-form-item label="注册名称" name="registrationname" required>
+      <a-input v-model:value="editModelForm.registrationname" placeholder="请输入注册名称" />
+    </a-form-item>
+  </a-form>
+</a-modal>
+
+
     <!-- 表格 -->
     <a-table 
       :columns="manufacturerColumns" 
@@ -137,12 +158,15 @@ import {DownOutlined } from '@ant-design/icons-vue';
 
 const isManufacturerModalVisible = ref(false);
 const isModelModalVisible = ref(false);
+const isEditModelModalVisible = ref(false);
 const confirmLoading = ref(false);
 const searchText = ref('');
 const manufacturerFormRef = ref(null);
 const modelFormRef = ref(null);
 const { proxy } = getCurrentInstance();
 const httpUrl = proxy.$httpUrl;
+const editModelFormRef = ref(null);
+let originalModel = null;
 
 const data = ref([]);
 const pageNum = ref(1);
@@ -156,6 +180,13 @@ const manufacturerForm = ref({
 });
 
 const modelForm = ref({
+  model: '',
+  registrationname: '',
+  allowflight: false,
+  manufacturerid: ''
+});
+
+const editModelForm = ref({
   model: '',
   registrationname: '',
   allowflight: false,
@@ -356,9 +387,66 @@ function handleTableChange(pagination) {
 }
 
 function editModel(record) {
-  console.log('编辑型号', record);
-  // 实现编辑型号的逻辑
+  originalModel =  record.model ; // 保存原始数据副本
+  editModelForm.value = { ...record }; // 将选中的型号数据保存到 editModelForm 中
+  isEditModelModalVisible.value = true; // 显示编辑型号的模态框
 }
+
+
+// 确认编辑型号的处理函数
+function handleEditModelOk() {
+  const model= originalModel;
+  editModelFormRef.value.validate().then(() => {
+    confirmLoading.value = true;
+
+    // 直接使用 modelForm 中的原始 model 值
+    axios.get(`${httpUrl}/dronetypes/getDronetypeidByModel`, {
+      params: { model: model } // 传递原始 model 值
+    })
+    .then(response => {
+      const dronetypeid = response.data.dronetypeid;
+      if (!dronetypeid) {
+        throw new Error('无法获取到 dronetypeid');
+      }
+
+      // 准备保存的表单数据
+      const saveData = {
+        dronetypeid,
+        model: editModelForm.value.model,
+        registrationname: editModelForm.value.registrationname,
+      };
+
+      // 执行保存请求
+      return axios.post(`${httpUrl}/dronetypes/saveOrMod`, saveData);
+    })
+    .then(() => {
+      message.success('型号编辑成功');
+      isEditModelModalVisible.value = false;
+
+      // 重新加载型号数据
+      const manufacturerRecord = data.value.find(item => item.manufacturername === editModelForm.value.manufacturername);
+      if (manufacturerRecord) {
+        loadDroneTypes(manufacturerRecord.manufacturername, manufacturerRecord);
+      } else {
+        console.error('无法找到对应的厂商记录');
+      }
+    })
+    .catch(error => {
+      console.error('编辑型号失败:', error);
+    })
+    .finally(() => {
+      confirmLoading.value = false;
+    });
+  });
+}
+
+
+
+function handleEditModelModalCancel() {
+  isEditModelModalVisible.value = false;
+}
+
+
 
 onMounted(() => {
   loadManufacturers();

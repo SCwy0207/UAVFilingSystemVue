@@ -34,6 +34,27 @@
         </a-form-item>
       </a-form>
     </a-modal>
+    <!-- 编辑厂商模态框 -->
+  <a-modal
+    :open="isEditModalVisible"
+    title="编辑厂商"
+    :confirmLoading="confirmLoading"
+    @ok="handleEditOk"
+    @cancel="handleEditCancel"
+  >
+  <a-form :model="editManufacturerForm" layout="vertical">
+  <a-form-item label="厂商名称">
+    <a-input v-model:value="editManufacturerForm.manufacturername" />
+  </a-form-item>
+  <a-form-item label="国家">
+    <a-input v-model:value="editManufacturerForm.country" />
+  </a-form-item>
+  <a-form-item label="网站">
+    <a-input v-model:value="editManufacturerForm.website" />
+  </a-form-item>
+</a-form>
+
+  </a-modal>
 
     <!-- 型号模态框 -->
     <a-modal
@@ -133,8 +154,9 @@
             <a-dropdown>
               <template #overlay>
                 <a-menu>
-                  <a-menu-item @click="handleAddModel(record)">新增型号</a-menu-item>
-                  <a-menu-item @click="confirmDeleteManufacturer(record)">删除厂商</a-menu-item>
+                  <a-menu-item key="1" @click="handleAddModel(record)">新增型号</a-menu-item>
+                  <a-divider />
+                  <a-menu-item key="1" @click="confirmDeleteManufacturer(record)">删除厂商</a-menu-item>
                 </a-menu>
               </template>
               <a>
@@ -155,7 +177,7 @@ import { ref, onMounted, getCurrentInstance } from 'vue';
 import axios from 'axios';
 import { Modal,message } from 'ant-design-vue';
 import {DownOutlined } from '@ant-design/icons-vue';
-
+const isEditModalVisible = ref(false);
 const isManufacturerModalVisible = ref(false);
 const isModelModalVisible = ref(false);
 const isEditModelModalVisible = ref(false);
@@ -167,6 +189,7 @@ const { proxy } = getCurrentInstance();
 const httpUrl = proxy.$httpUrl;
 const editModelFormRef = ref(null);
 let originalModel = null;
+let originalManufacturername = null;
 
 const data = ref([]);
 const pageNum = ref(1);
@@ -178,6 +201,13 @@ const manufacturerForm = ref({
   country: '',
   website: ''
 });
+
+const editManufacturerForm =ref({
+  manufacturername: '',
+  country: '',
+  website: ''
+});
+
 
 const modelForm = ref({
   model: '',
@@ -471,11 +501,48 @@ function handleTableChange(pagination) {
   loadManufacturers();
 }
 
+function editManufacturer(record) {
+  originalManufacturername = record.manufacturername; // 保存原始数据副本
+  editManufacturerForm.value = { ...record }; // 将选中的厂商数据保存到 editManufacturerForm 中
+  isEditModalVisible.value = true; // 显示编辑厂商的模态框
+}
+
+function handleEditOk() {
+  const manufacturername = originalManufacturername;
+  confirmLoading.value = true;
+
+  axios.get(`${httpUrl}/manufacturers/getManufactureridByManufacturerName`, {
+    params: { manufacturername }
+  })
+  .then(response => {
+    const manufacturerid = response.data.manufacturerid;
+    return axios.post(`${httpUrl}/manufacturers/saveOrMod`, {
+      ...editManufacturerForm.value,
+      manufacturerid
+    });
+  })
+  .then(() => {
+    message.success('厂商信息更新成功');
+    isEditModalVisible.value = false;
+    confirmLoading.value = false;
+    loadManufacturers();
+  })
+  .catch(error => {
+    console.error('更新厂商信息失败:', error);
+    confirmLoading.value = false;
+  });
+}
+
+function handleEditCancel() {
+  isEditModalVisible.value = false;
+}
+
 function editModel(record) {
   originalModel =  record.model ; // 保存原始数据副本
   editModelForm.value = { ...record }; // 将选中的型号数据保存到 editModelForm 中
   isEditModelModalVisible.value = true; // 显示编辑型号的模态框
 }
+
 
 
 // 确认编辑型号的处理函数

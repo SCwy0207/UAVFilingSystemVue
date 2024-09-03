@@ -7,6 +7,8 @@ import ACenter from '../views/admin/AdminCenter.vue'
 import UserProfile from '../views/admin/component/UserProfileManagement.vue'
 import Alert from '../views/admin/component/SendAlert.vue'
 import DroneManagement from '../views/admin/component/DroneManagement.vue'
+import UserProfileDetail from '../views/admin/component/UserProfileDetail.vue'
+import UCenter from '../views/user/UserCenter.vue'
 
 const routes = [
   { path: '/', component: Index , meta:{title:'万智星云'}},
@@ -17,7 +19,19 @@ const routes = [
     component: ACenter, 
     meta: { title: '管理中心' },
     children: [
-      { path: 'user-profile', component: UserProfile },
+      { path: 'user-profile', component: UserProfile},
+      {path:'user-profile-detail',component:UserProfileDetail},
+      { path: 'alert', component: Alert},
+      { path: 'drone-management', component: DroneManagement }
+    ]
+  },
+  { 
+    path: '/UCenter', 
+    component: UCenter, 
+    meta: { title: '用户中心' },
+    children: [
+      { path: 'user-profile', component: UserProfile},
+      {path:'user-profile-detail',component:UserProfileDetail},
       { path: 'alert', component: Alert},
       { path: 'drone-management', component: DroneManagement }
     ]

@@ -19,7 +19,7 @@
               </span>
             </template>
             <a-menu-item key="2" @click="() => $router.push('/ACenter/user-profile')">用户管理</a-menu-item>
-            <a-menu-item key="3" @click="() => $router.push('/ACenter/alert')">发布通知</a-menu-item>
+            <a-menu-item key="3" @click="() => $router.push('/ACenter/user-profile-detail')">发布通知</a-menu-item>
           </a-sub-menu>
           <a-sub-menu key="sub2">
             <template #title>
@@ -37,11 +37,24 @@
           </a-menu-item>
         </a-menu>
       </a-layout-sider>
+
       <!-- 头部区 -->
       <a-layout>
-        <a-layout-header style="background:#282C34 ; padding: 0">
-          <h1 style="font-size: 200%; font-family: Arial, Helvetica, sans-serif; color:#fff ; margin: 0; text-align: center;">万智星云后台管理系统</h1>
+        <a-layout-header style="background:#282C34; width:100%; padding: 0; display: flex; justify-content: center; align-items: center; position: relative;">
+          <h1 style="font-size: 200%; font-family: Arial, Helvetica, sans-serif; color:#fff; margin: 0;">万智星云后台管理系统</h1>
+          <div style="position: absolute; right: 3%;">
+          <a-popover trigger="click" >
+            <template #content>
+              <p @click="viewNotifications" style="cursor: pointer;">查看通知</p>
+              <p @click="logout" style="cursor: pointer;">退出登录</p>
+            </template>
+            <a-badge :count="5">
+              <a-avatar shape="square" icon="user" style="cursor: pointer;"/>
+            </a-badge>
+          </a-popover>
+          </div>
         </a-layout-header>
+
         <!-- 视窗区 -->
         <a-watermark content="Ant Design Vue">
           <a-layout-content style="margin: 0 16px">
@@ -54,6 +67,7 @@
             </div>
           </a-layout-content>
         </a-watermark>
+
         <a-layout-footer style="text-align: center; position: relative; bottom: 1%; width: 90%;">
           Design ©2024 Created by Victor Kuo
         </a-layout-footer>
@@ -64,7 +78,18 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { PieChartOutlined, UserOutlined, TeamOutlined, FileOutlined } from '@ant-design/icons-vue';
+
+const router = useRouter();
+
+const viewNotifications = () => {
+  router.push('/notifications');
+};
+
+const logout = () => {
+  router.push('/login');
+};
 
 const collapsed = ref(false);
 const selectedKeys = ref(['1']);

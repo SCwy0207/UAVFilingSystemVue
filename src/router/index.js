@@ -9,6 +9,7 @@ import Alert from '../views/admin/component/SendAlert.vue'
 import DroneManagement from '../views/admin/component/DroneManagement.vue'
 import UserProfileDetail from '../views/admin/component/UserProfileDetail.vue'
 import UCenter from '../views/user/UserCenter.vue'
+import MyDeskTop from '../views/admin/component/MyDeskTop.vue'
 
 const routes = [
   { path: '/', component: Index , meta:{title:'万智星云'}},
@@ -19,6 +20,7 @@ const routes = [
     component: ACenter, 
     meta: { title: '管理中心' },
     children: [
+      {path:'my-desktop',component: MyDeskTop},
       { path: 'user-profile', component: UserProfile},
       {path:'user-profile-detail',component:UserProfileDetail},
       { path: 'alert', component: Alert},

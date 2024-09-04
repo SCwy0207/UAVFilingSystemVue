@@ -7,6 +7,8 @@ import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
 import axios from 'axios'
 import router from './router'
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
 
 
 // 创建应用实例
@@ -20,6 +22,9 @@ app.config.globalProperties.$httpUrl = 'http://localhost:8088';
 
 // 使用 Ant Design Vue 插件
 app.use(Antd);
+
+//使用elementPlus
+app.use(ElementPlus);
 
 // 使用路由
 app.use(router);

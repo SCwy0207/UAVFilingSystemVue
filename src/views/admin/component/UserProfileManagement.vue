@@ -109,14 +109,14 @@
         </a-form>
       </a-modal>
        <!-- 详情模态框 -->
-       <a-drawer
-       title="用户信息详情"
-       :width="720"
-       :visible="visible"
-       :body-style="{ paddingBottom: '100px' }"
-       @close="onClose"
-     >
-     <a-form :model="form" layout="vertical" :rules="rules2" ref="formRef" hide-required-mark>
+<a-drawer
+  title="用户信息详情"
+  :width="720"
+  :visible="visible"
+  :body-style="{ paddingBottom: '100px' }"
+  @close="onClose"
+>
+  <a-form :model="form" layout="vertical" :rules="rules2" ref="formRef" hide-required-mark>
     <!-- 用户信息部分 -->
     <a-row :gutter="16">
       <a-col :span="24">
@@ -130,62 +130,63 @@
       </a-col>
     </a-row>
 
-         <!-- 分割线 -->
-         <a-divider />
+    <!-- 分割线 -->
+    <a-divider />
 
-         <!-- 姓名、邮箱、密码等信息 -->
-         <a-row :gutter="16">
-           <a-col :span="12">
-             <a-form-item label="姓名" name="name">
-               <a-input v-model:value="fullName" disabled />
-             </a-form-item>
-           </a-col>
-           <a-col :span="12">
-             <a-form-item label="性别" name="gender">
-               <a-select v-model:value="form.gender" placeholder="请选择性别">
-                 <a-select-option value="Male">男</a-select-option>
-                 <a-select-option value="Female">女</a-select-option>
-                 <a-select-option value="Other">其他</a-select-option>
-               </a-select>
-             </a-form-item>
-           </a-col>
-         </a-row>
-         <a-row :gutter="16">
-           <a-col :span="12">
-             <a-form-item label="邮箱" name="email">
-               <a-input v-model:value="form.email" placeholder="请输入邮箱" />
-             </a-form-item>
-           </a-col>
-           <a-col :span="12">
-             <a-form-item label="手机号" name="phoneNumber">
-               <a-input v-model:value="form.phoneNumber" placeholder="请输入手机号" />
-             </a-form-item>
-           </a-col>
-         </a-row>
-         <a-row :gutter="16">
-           <a-col :span="12">
-            <a-form-item label="出生日期" name="dateOfBirth">
-  <a-date-picker 
-    v-model:value="form.dateOfBirth"
-    style="width: 100%"
-    :get-popup-container="trigger => trigger.parentNode"
-  />
-</a-form-item>
+    <!-- 姓名、邮箱、密码等信息 -->
+    <a-row :gutter="16">
+      <a-col :span="12">
+        <a-form-item label="姓名" name="name">
+          <a-input v-model:value="form.fullname" disabled />
+        </a-form-item>
+      </a-col>
+      <a-col :span="12">
+        <a-form-item label="性别" name="gender">
+          <a-select v-model:value="form.gender" placeholder="请选择性别">
+            <a-select-opACtion value="Male">男</a-select-opACtion>
+            <a-select-option value="Female">女</a-select-option>
+            <a-select-option value="Other">其他</a-select-option>
+          </a-select>
+        </a-form-item>
+      </a-col>
+    </a-row>
+    <a-row :gutter="16">
+      <a-col :span="12">
+        <a-form-item label="邮箱" name="email">
+          <a-input v-model:value="form.email" placeholder="请输入邮箱" />
+        </a-form-item>
+      </a-col>
+      <a-col :span="12">
+        <a-form-item label="手机号" name="phoneNumber">
+          <a-input v-model:value="form.phoneNumber" placeholder="请输入手机号" />
+        </a-form-item>
+      </a-col>
+    </a-row>
+    <a-row :gutter="16">
+      <a-col :span="12">
+        <a-form-item label="出生日期" name="dateOfBirth">
+          <a-date-picker 
+            v-model:value="form.dateOfBirth"
+            style="width: 100%"
+            :get-popup-container="trigger => trigger.parentNode"
+          />
+        </a-form-item>
+      </a-col>
+    </a-row>
+    <a-row :gutter="16">
+      <a-col :span="12">
+        <a-form-item label="个人简介" name="bio">
+          <a-textarea
+            v-model:value="form.bio"
+            :rows="4"
+            placeholder="请输入个人简介"
+          />
+        </a-form-item>
+      </a-col>
+    </a-row>
 
-           </a-col>
-           <a-col :span="12">
-             <a-form-item label="个人简介" name="bio">
-               <a-textarea
-                 v-model:value="form.bio"
-                 :rows="4"
-                 placeholder="请输入个人简介"
-               />
-             </a-form-item>
-           </a-col>
-         </a-row>
-
-         <!-- 无人机型号信息表格 -->
-         <a-divider style="margin-top: 20px;" />
+    <!-- 无人机型号信息表格 -->
+    <a-divider style="margin-top: 20px;" />
     <a-table :columns="columns2" :data-source="drones" row-key="droneID">
       <template #action="{ record }">
         <span>
@@ -196,28 +197,29 @@
       </template>
     </a-table>
 
-       </a-form>
-       <div
-         :style="{
-           position: 'absolute',
-           right: 0,
-           bottom: 0,
-           width: '100%',
-           borderTop: '1px solid #e9e9e9',
-           padding: '10px 16px',
-           background: '#fff',
-           textAlign: 'right',
-           zIndex: 1,
-         }"
-       >
-         <a-button :style="{ marginRight: '8px' }" @click="onClose">
-           取消
-         </a-button>
-         <a-button type="primary" @click="submitForm">
-           提交
-         </a-button>
-       </div>
-     </a-drawer>
+    <div
+      :style="{
+        position: 'absolute',
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        borderTop: '1px solid #e9e9e9',
+        padding: '10px 16px',
+        background: '#fff',
+        textAlign: 'right',
+        zIndex: 1,
+      }"
+    >
+      <a-button :style="{ marginRight: '8px' }" @click="onClose">
+        取消
+      </a-button>
+      <a-button type="primary" @click="submitForm">
+        提交修改
+      </a-button>
+    </div>
+  </a-form>
+</a-drawer>
+
     </div>
     <a-table 
   :columns="columns" 
@@ -244,7 +246,7 @@
 >
 
     <!-- 表头 -->
-    <template #headerCell="{ column }">
+    <template v-slot:headerCell="{ column }">
       <template v-if="column.key === 'index'">
           <span>序号</span>
       </template>
@@ -257,7 +259,7 @@
     </template>
   
     <!-- 表格主体 -->
-    <template #bodyCell="{ column, record,index }">
+    <template v-slot:bodyCell="{ column, record,index }">
       <template v-if="column.key === 'index'">
           <span>{{ (pageNum - 1) * pageSize + index + 1 }}</span>
         </template>
@@ -281,14 +283,14 @@
         <span>
           <a @click="fetchUserDetails(record.username)">详情</a>
           <a-divider type="vertical" />
-          <a style="margin-left: 8px;">删除</a>
+          <a style="margin-left: 8px;" @click="deleteUser(record)">删除</a>
           <a-divider type="vertical" />
           <a-dropdown>
           <a class="ant-dropdown-link">
             更多操作
             <down-outlined />
           </a>
-          <template #overlay>
+          <template v-slot:overlay>
             <a-menu>
               <a-menu-item key="1" @click="notifyUser(record)" class="bold-menu-item">通知用户</a-menu-item>
               <a-divider />
@@ -395,8 +397,7 @@ const columns = ref([
 const form = ref({
   username: "",
   password: "", 
-  firstName: "",
-  lastName: "",
+  fullname:"",
   email: "",
   phoneNumber: "",
   gender: "Other",
@@ -423,8 +424,7 @@ const rules = ref({
   status: [{ required: true, message: '请选择用户状态' }],
   roleid: [{ required: true, message: '请选择角色' }]
 });
-// fullName 用来存储姓名显示
-const fullName = ref("");
+
 
 // 无人机型号信息表格数据
 const drones = ref([
@@ -477,28 +477,35 @@ const fetchUserDetails = async (username) => {
     // 获取用户的详细信息
     const userProfileResponse = await axios.post(`${httpUrl}/userprofile/searchProfileByUserid`, userId);
     const userProfile = userProfileResponse.data;
-    console.log(userProfile);
 
     // 获取用户拥有的无人机信息
     const dronesResponse = await axios.post(`${httpUrl}/drones/searchDronesByUserid`, userId);
     const dronesData = dronesResponse.data;
+
+    // 处理日期
+    const dateOfBirth = userProfile[0].dateofbirth;
+    const formattedDateOfBirth = dateOfBirth ? moment(dateOfBirth) : null;
     
-    let data=new Date(userProfile[0].dateofbirth);
-  console.log(data);
-  console.log(userProfile[0].dateofbirth);
+    // 计算 fullname
+    const { firstname, lastname } = userProfile[0];
+    let fullname = '';
+    if (isChinese(firstname) || isChinese(lastname)) {
+      fullname = `${lastname} ${firstname}`;
+    } else {
+      fullname = `${firstname} ${lastname}`;
+    }
+
     // 将信息存储到 form 和 drones 中
-    
     form.value = {
-  username: user[0].username,
-  password: user[0].password, 
-  firstName: userProfile[0].firstname || '',
-  lastName: userProfile[0].lastname || '',
-  email: user[0].email || '',
-  phoneNumber: user[0].phonenumber || '',
-  gender: userProfile[0].gender || 'Other',
-  dateOfBirth: moment(userProfile[0].dateofbirth),
-  bio: userProfile[0].bio || '',
-};
+      username: user[0].username,
+      password: user[0].password, 
+      email: user[0].email || '',
+      phoneNumber: user[0].phonenumber || '',
+      gender: userProfile[0].gender || 'Other',
+      dateOfBirth: formattedDateOfBirth,
+      bio: userProfile[0].bio || '',
+      fullname: fullname 
+    };
 
     drones.value = dronesData.map(drone => ({
       droneID: drone.droneid,
@@ -518,6 +525,43 @@ const fetchUserDetails = async (username) => {
   }
 };
 
+// 删除用户
+async function deleteUser(record) {
+  try {
+    // 获取 userid
+    const response = await axios.get(`${httpUrl}/users/getUserid`, {
+      params: { username: record.username }
+    });
+    const userid = response.data.userid;
+    // 删除用户无人机信息(包括通行区域)
+    const deleteUserDronesResponse = await axios.get(`${httpUrl}/drones/deleteByUserid?userid=${userid}`);
+
+    // 删除用户资料
+    const deleteUserProfileResponse = await axios.get(`${httpUrl}/userprofile/delete?userid=${userid}`);
+
+    // 删除用户信息
+    const deleteUserResponse = await axios.get(`${httpUrl}/users/delete?userid=${userid}`);
+
+    
+
+    // 处理响应结果
+    if (deleteUserDronesResponse.data && deleteUserResponse.data && deleteUserProfileResponse.data) {
+      console.log('用户资料及其所拥有的无人机删除成功');
+    } else {
+      console.log('删除失败');
+    }
+  } catch (error) {
+    console.error('删除用户时发生错误:', error);
+  }
+  loadPost();
+}
+
+
+// 判断字符串是否包含中文
+const isChinese = (str) => {
+  const chinesePattern = /[\u4e00-\u9fa5]/;
+  return chinesePattern.test(str);
+};
 const showDrawer = () => {
   visible.value = true;
 };
@@ -589,7 +633,7 @@ function loadPost() {
     }).then(res => res.data)
   ]).then(([userRes, userProfileRes]) => {
     if (!userProfileRes || !Array.isArray(userProfileRes)) {
-      console.error('User profile data is missing or invalid');
+      console.error('用户详情文件数据缺失或无效');
       return;
     }
 

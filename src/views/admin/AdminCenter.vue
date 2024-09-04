@@ -9,7 +9,7 @@
         <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
           <a-menu-item key="1">
             <pie-chart-outlined />
-            <span @click="() => $router.push('/ACenter')">我的桌面</span>
+            <span @click="() => $router.push('/ACenter/my-desktop')">我的桌面</span>
           </a-menu-item>
           <a-sub-menu key="sub1">
             <template #title>

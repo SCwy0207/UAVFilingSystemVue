@@ -19,7 +19,7 @@
               </span>
             </template>
             <a-menu-item key="2" @click="() => $router.push('/ACenter/user-profile')">用户管理</a-menu-item>
-            <a-menu-item key="3" @click="() => $router.push('/ACenter/user-profile-detail')">发布通知</a-menu-item>
+            <a-menu-item key="3" @click="() => $router.push('/ACenter/alert')">发布通知</a-menu-item>
           </a-sub-menu>
           <a-sub-menu key="sub2">
             <template #title>
@@ -59,8 +59,8 @@
         <a-watermark content="Ant Design Vue">
           <a-layout-content style="margin: 0 16px">
             <a-breadcrumb style="margin: 16px 0">
-              <a-breadcrumb-item>User</a-breadcrumb-item>
-              <a-breadcrumb-item>Bill</a-breadcrumb-item>
+              <a-breadcrumb-item>SuperAdmin</a-breadcrumb-item>
+              <a-breadcrumb-item>Victor</a-breadcrumb-item>
             </a-breadcrumb>
             <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
               <router-view />

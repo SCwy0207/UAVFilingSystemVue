@@ -42,8 +42,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, getCurrentInstance} from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';  // 确保安装了 axios 库
 
 const router = useRouter();
 const username = ref('');
@@ -51,28 +52,49 @@ const password = ref('');
 const email = ref('');
 const dynamicCode = ref('');
 const isEmailLogin = ref(false);
+const { proxy } = getCurrentInstance();
+const httpUrl = proxy.$httpUrl;
 
-const login = () => {
-  if (isEmailLogin.value) {
-    if (!email.value) {
-      alert("请输入邮箱");
-      return;
+const login = async () => {
+  try {
+    let response;
+    if (isEmailLogin.value) {
+      if (!email.value) {
+        alert("请输入邮箱");
+        return;
+      }
+      if (!dynamicCode.value) {
+        alert("请输入动态码");
+        return;
+      }
+      // 发送邮箱动态码登录请求（根据后端接口的实现进行调整）
+      response = await axios.post('/auth/login', {
+        email: email.value,
+        dynamicCode: dynamicCode.value
+      });
+    } else {
+      if (!username.value) {
+        alert("请输入用户名");
+        return;
+      }
+      if (!password.value) {
+        alert("请输入密码");
+        return;
+      }
+      // 发送用户名密码登录请求
+      response = await axios.post(`${httpUrl}/login`, {
+        username: username.value,
+        password: password.value
+      });
     }
-    if (!dynamicCode.value) {
-      alert("请输入动态码");
-      return;
-    }
-    // 在这里添加邮箱动态码的验证逻辑
-  } else {
-    if (!username.value) {
-      alert("请输入用户名");
-      return;
-    }
-    if (!password.value) {
-      alert("请输入密码");
-      return;
-    }
-    // 在这里添加账号密码的验证逻辑
+    // 处理登录成功的逻辑
+    const token = response.data.token;  // 获取返回的 token
+    localStorage.setItem('username',username.value);
+    localStorage.setItem('token', token);  // 保存 token
+    router.push('/ACenter');  // 登录成功后跳转到首页或其他页面
+  } catch (error) {
+    console.error(error);
+    alert("登录失败，请检查用户名、密码或动态码。");
   }
 };
 
@@ -84,11 +106,21 @@ const toggleLogin = (loginType) => {
   isEmailLogin.value = (loginType === 'email');
 };
 
-const sendDynamicCode = () => {
-  // 发送动态码的逻辑
-  alert("动态码已发送到您的邮箱！");
+const sendDynamicCode = async () => {
+  if (!email.value) {
+    alert("请输入邮箱");
+    return;
+  }
+  try {
+    await axios.post('/auth/sendDynamicCode', { email: email.value });
+    alert("动态码已发送到您的邮箱！");
+  } catch (error) {
+    console.error(error);
+    alert("发送动态码失败，请稍后重试。");
+  }
 };
 </script>
+
 
 <style>
 @import '../assets/css/LoginPage/LoginPage.css';

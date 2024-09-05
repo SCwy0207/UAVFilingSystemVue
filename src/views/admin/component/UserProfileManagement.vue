@@ -546,12 +546,12 @@ async function deleteUser(record) {
 
     // 处理响应结果
     if (deleteUserDronesResponse.data && deleteUserResponse.data && deleteUserProfileResponse.data) {
-      console.log('用户资料及其所拥有的无人机删除成功');
+      message.error('删除用户成功失败');
     } else {
       console.log('删除失败');
     }
   } catch (error) {
-    console.error('删除用户时发生错误:', error);
+    message.error('删除用户时发生错误');
   }
   loadPost();
 }

@@ -47,7 +47,8 @@
   <script setup>
   import { ref, onMounted, getCurrentInstance } from 'vue';
   import axios from 'axios';
-  import { User, Online, Camera, Factory } from '@element-plus/icons-vue';
+  import { User } from '@element-plus/icons-vue'; // 示例，替换为实际存在的图标
+
   
   const usersTotal = ref(0);
   const inActiveUsers = ref(0); 

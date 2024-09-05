@@ -11,6 +11,23 @@ import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 
 
+axios.interceptors.request.use(config => {
+
+  if (window.localStorage.getItem('token')) {
+
+    console.log(config)
+
+    //判断token是否存在
+
+    config.headers.Authorization = window.localStorage.getItem('token');  //将token设置成请求头
+
+  }
+
+  return config;
+
+});
+
+
 // 创建应用实例
 const app = createApp(App);
 

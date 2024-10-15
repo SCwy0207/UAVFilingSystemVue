@@ -7,7 +7,10 @@ import Register from '../views/RegisterPage.vue';
 import ACenter from '../views/admin/AdminCenter.vue';
 import UserProfile from '../views/admin/component/UserProfileManagement.vue';
 import Alert from '../views/admin/component/SendAlert.vue';
+import AlertBox from '@/views/admin/component/AlertBox.vue';
 import DroneManagement from '../views/admin/component/DroneManagement.vue';
+import DroneUnFilingManagement from'../views/admin/component/DroneUnFilingManagement.vue';
+import FilingManagement from '@/views/admin/component/FilingManagement.vue';
 import UCenter from '../views/user/UserCenter.vue';
 import MyDeskTop from '../views/admin/component/MyDeskTop.vue';
 
@@ -23,7 +26,10 @@ const routes = [
       { path: 'my-desktop', component: MyDeskTop, meta: { requiresAuth: true } },
       { path: 'user-profile', component: UserProfile, meta: { requiresAuth: true } },
       { path: 'alert', component: Alert, meta: { requiresAuth: true } },
+      { path: 'alertBox', component:AlertBox,meta:{ requireAuth:true}},
       { path: 'drone-management', component: DroneManagement, meta: { requiresAuth: true } },
+      { path: 'drone-filing-management', component: FilingManagement, meta: { requiresAuth: true } },
+      { path: 'drone-unfiling-management', component: DroneUnFilingManagement, meta: { requiresAuth: true } },
     ],
   },
   {

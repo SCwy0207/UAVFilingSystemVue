@@ -50,6 +50,7 @@ const router = useRouter();
 const username = ref('');
 const password = ref('');
 const email = ref('');
+const roleid=ref('')
 const dynamicCode = ref('');
 const isEmailLogin = ref(false);
 const { proxy } = getCurrentInstance();
@@ -91,6 +92,7 @@ const login = async () => {
     const token = response.data.token;  // 获取返回的 token
     localStorage.setItem('username',username.value);
     localStorage.setItem('token', token);  // 保存 token
+    localStorage.setItem('roleId',roleid);
     router.push('/ACenter');  // 登录成功后跳转到首页或其他页面
   } catch (error) {
     console.error(error);

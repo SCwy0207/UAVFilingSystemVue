@@ -7,13 +7,13 @@
         <!-- 用户表 -->
         <a-form-item label="电子邮件地址" required>
           <a-input
-            v-model="email"
+          v-model:value="email"
             type="email"
             placeholder="请输入电子邮件地址"
             style="width: 60%; margin-right: 2%;"
           />
           <a-input
-            v-model="SMS"
+          v-model:value="SMS"
             placeholder="验证码"
             style="width: 15%; margin-right: 2%;"
           />
@@ -23,35 +23,35 @@
         </a-form-item>
 
         <a-form-item label="用户名">
-          <a-input v-model="username" placeholder="请输入用户名" />
+          <a-input v-model:value="username" placeholder="请输入用户名" />
         </a-form-item>
 
         <a-form-item label="密码" required>
-          <a-input-password v-model="password" placeholder="请输入密码" />
+          <a-input-password v-model:value="password" placeholder="请输入密码" />
         </a-form-item>
 
         <a-form-item label="确认密码" required>
           <a-input-password
-            v-model="confirmPassword"
+          v-model:value="confirmPassword"
             placeholder="请再次输入密码"
           />
         </a-form-item>
 
         <!-- 用户信息表 -->
         <a-form-item label="性别">
-          <a-select v-model="gender" placeholder="请选择性别">
+          <a-select v-model:value="gender" placeholder="请选择性别">
             <a-select-option value="Male">男</a-select-option>
             <a-select-option value="Female">女</a-select-option>
           </a-select>
         </a-form-item>
 
         <a-form-item label="出生日期">
-          <a-date-picker v-model="dob" style="width: 100%;" />
+          <a-date-picker v-model:value="dob" style="width: 100%;" />
         </a-form-item>
 
         <a-form-item label="个人简介">
           <a-textarea
-            v-model="bio"
+          v-model:value="bio"
             rows="4"
             placeholder="请输入个人简介"
             style="resize: none;"
@@ -59,7 +59,7 @@
         </a-form-item>
 
         <a-form-item>
-          <a-button type="primary" html-type="submit" block>
+          <a-button type="primary" html-type="submit">
             注册
           </a-button>
         </a-form-item>
@@ -70,36 +70,87 @@
 </template>
 
 <script>
+import { ref, getCurrentInstance } from 'vue';
+import { useRouter } from 'vue-router'; 
+import axios from 'axios'; 
+
+
 export default {
-  data() {
+  setup() {
+    const email = ref("");
+    const SMS = ref("");
+    const password = ref("");
+    const confirmPassword = ref("");
+    const username = ref("");
+    const gender = ref("other");
+    const dob = ref("");
+    const bio = ref("");
+
+    const { proxy } = getCurrentInstance();
+    const $httpUrl = proxy.$httpUrl;
+
+    const router = useRouter();
+
+    const sendSMSCode = () => {
+      proxy.$message.success(`验证码已发送到 ${email.value}`);
+    };
+
+    const register = async () => {
+  if (password.value !== confirmPassword.value) {
+    proxy.$message.error("密码与确认密码不匹配");
+    return;
+  }
+
+  try {
+    const userRegistrationResponse = await axios.post(
+      `${$httpUrl}/register/userSave`,
+      {
+        user: {
+          email: email.value,
+          username: username.value,
+          password: password.value,
+        },
+        userprofile: {
+          gender: gender.value,
+          dateofbirth: dob.value,
+          bio: bio.value,
+        }
+      }
+    );
+
+    if (userRegistrationResponse.data.code === 200) {
+      proxy.$message.success("注册成功！");
+      router.push("/login");
+    } else {
+      proxy.$message.error("用户名注册冲突！");
+    }
+  } catch (error) {
+    if (error.response && error.response.data.code === 409) {
+      proxy.$message.error("该邮箱或用户名已被注册");
+    } else {
+      proxy.$message.error("注册失败，请重试");
+    }
+  }
+};
+
+
     return {
-      email: "",
-      SMS: "",
-      password: "",
-      confirmPassword: "",
-      username: "",
-      gender: "Male",
-      dob: "",
-      bio: "",
+      email,
+      SMS,
+      password,
+      confirmPassword,
+      username,
+      gender,
+      dob,
+      bio,
+      sendSMSCode,
+      register,
     };
   },
-  methods: {
-    sendSMSCode() {
-      // 在这里实现发送验证码的逻辑
-      this.$message.success(`验证码已发送到 ${this.email}`);
-    },
-    register() {
-      // 在这里实现注册逻辑
-      if (this.password !== this.confirmPassword) {
-        this.$message.error("密码与确认密码不匹配");
-        return;
-      }
-      this.$message.success("注册成功！");
-      // 发送数据到后台的逻辑
-    },
-  },
 };
+
 </script>
+
 
 <style scoped>
 #RegisterPage {

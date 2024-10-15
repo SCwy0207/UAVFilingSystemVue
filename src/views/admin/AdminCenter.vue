@@ -15,11 +15,12 @@
             <template #title>
               <span>
                 <user-outlined />
-                <span>用户信息管理</span>
+                <span>用户管理</span>
               </span>
             </template>
-            <a-menu-item key="2" @click="() => $router.push('/ACenter/user-profile')">用户管理</a-menu-item>
+            <a-menu-item key="2" @click="() => $router.push('/ACenter/user-profile')">用户信息管理</a-menu-item>
             <a-menu-item key="3" @click="() => $router.push('/ACenter/alert')">发布通知</a-menu-item>
+            <a-menu-item key="4" @click="() => $router.push('/ACenter/alertBox')">通知管理</a-menu-item>
           </a-sub-menu>
           <a-sub-menu key="sub2">
             <template #title>
@@ -28,13 +29,10 @@
                 <span>无人机授权管理</span>
               </span>
             </template>
-            <a-menu-item key="4" @click="() => $router.push('/ACenter/drone-management')">无人机管理</a-menu-item>
-            <a-menu-item key="5">通行管制</a-menu-item>
+            <a-menu-item key="5" @click="() => $router.push('/ACenter/drone-management')">无人机管理</a-menu-item>
+            <a-menu-item key="6" @click="() => $router.push('/ACenter/drone-filing-management')">无人机备案管理</a-menu-item>
+            <a-menu-item key="7" @click="()=> $router.push('/ACenter/drone-unfiling-management')">备案审批</a-menu-item>
           </a-sub-menu>
-          <a-menu-item key="6">
-            <file-outlined />
-            <span>操作记录</span>
-          </a-menu-item>
         </a-menu>
       </a-layout-sider>
 
@@ -45,10 +43,9 @@
           <div style="position: absolute; right: 3%;">
           <a-popover trigger="click" >
             <template #content>
-              <p @click="viewNotifications" style="cursor: pointer;">查看通知</p>
               <p @click="logout" style="cursor: pointer;">退出登录</p>
             </template>
-            <a-badge :count="5">
+            <a-badge :count="null">
               <a-avatar shape="square" icon="user" style="cursor: pointer;"/>
             </a-badge>
           </a-popover>
@@ -59,8 +56,8 @@
         <a-watermark content="Ant Design Vue">
           <a-layout-content style="margin: 0 16px">
             <a-breadcrumb style="margin: 16px 0">
-              <a-breadcrumb-item>SuperAdmin</a-breadcrumb-item>
-              <a-breadcrumb-item>Victor</a-breadcrumb-item>
+              <a-breadcrumb-item>{{ roleName }}</a-breadcrumb-item>
+              <a-breadcrumb-item>{{ userName }}</a-breadcrumb-item>
             </a-breadcrumb>
             <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
               <router-view />
@@ -77,22 +74,42 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted,getCurrentInstance } from 'vue';
 import { useRouter } from 'vue-router';
-import { PieChartOutlined, UserOutlined, TeamOutlined, FileOutlined } from '@ant-design/icons-vue';
+import { PieChartOutlined, UserOutlined, TeamOutlined} from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
+import axios from 'axios';
 
 const router = useRouter();
+const userName = ref(localStorage.getItem('username') || 'error'); 
+const roleId = ref(localStorage.getItem('roleId') || '2'); 
+const { proxy } = getCurrentInstance();
+const httpUrl = proxy.$httpUrl;
 
-const viewNotifications = () => {
-  router.push('/notifications');
+const roleName = computed(() => {
+  return roleId.value === '1' ? '管理员' : '用户';
+});
+
+
+const logout = async () => {
+  const username = localStorage.getItem('username'); // 从本地存储获取用户名
+  try {
+    await axios.get(`${httpUrl}/logout`, { params: { username } }); // 发送 GET 请求
+    message.success('成功退出登录'); // 可选：显示退出成功的消息
+    router.push('/login'); // 跳转到登录页面
+  } catch (error) {
+    console.error('退出登录失败:', error);
+    message.error('退出登录失败'); // 可选：显示错误消息
+  }
 };
 
-const logout = () => {
-  router.push('/login');
-};
 
 const collapsed = ref(false);
 const selectedKeys = ref(['1']);
+
+onMounted(() => {
+  router.push('/ACenter/my-desktop');
+});
 </script>
 
 <style scoped>

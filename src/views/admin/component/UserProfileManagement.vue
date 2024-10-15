@@ -124,9 +124,9 @@
         <a-form-item label="用户名" name="username">
           <a-input v-model:value="form.username" disabled />
         </a-form-item>
-        <a-form-item label="密码" name="password">
+        <!-- <a-form-item label="密码" name="password">
           <a-input v-model:value="form.password" placeholder="请输入密码" />
-        </a-form-item>
+        </a-form-item> -->
       </a-col>
     </a-row>
 
@@ -143,7 +143,7 @@
       <a-col :span="12">
         <a-form-item label="性别" name="gender">
           <a-select v-model:value="form.gender" placeholder="请选择性别">
-            <a-select-opACtion value="Male">男</a-select-opACtion>
+            <a-select-option value="Male">男</a-select-option>
             <a-select-option value="Female">女</a-select-option>
             <a-select-option value="Other">其他</a-select-option>
           </a-select>

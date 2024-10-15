@@ -68,14 +68,26 @@
     >
       <a-form :model="modelForm" layout="vertical" :rules="modelRules" ref="modelFormRef">
         <a-form-item label="型号名称" name="model" required>
-          <a-input v-model:value="modelForm.model" placeholder="请输入型号名称" />
-        </a-form-item>
-        <a-form-item label="注册名称" name="registrationname" required>
-          <a-input v-model:value="modelForm.registrationname" placeholder="请输入注册名称" />
-        </a-form-item>
-        <a-form-item label="是否允许飞行" name="allowflight" required>
-          <a-switch v-model:checked="modelForm.allowflight" />
-        </a-form-item>
+    <a-input v-model:value="modelForm.model" placeholder="请输入型号名称" />
+  </a-form-item>
+  <a-form-item label="注册名称" name="productName" required>
+    <a-input v-model:value="modelForm.productName" placeholder="请输入注册名称" />
+  </a-form-item>
+  <a-form-item label="类别" name="category" required>
+    <a-input v-model:value="modelForm.category" placeholder="请输入类别" />
+  </a-form-item>
+  <a-form-item label="类型" name="type" required>
+    <a-input v-model:value="modelForm.type" placeholder="请输入类型" />
+  </a-form-item>
+  <a-form-item label="空重 (kg)" name="emptyWeight" required>
+    <a-input-number v-model:value="modelForm.emptyWeight" placeholder="请输入空重" style="width: 100%" />
+  </a-form-item>
+  <a-form-item label="最大起飞重量 (kg)" name="maxTakeoffWeight" required>
+    <a-input-number v-model:value="modelForm.maxTakeoffWeight" placeholder="请输入最大起飞重量" style="width: 100%" />
+  </a-form-item>
+  <a-form-item label="用途" name="purpose" required>
+    <a-input v-model:value="modelForm.purpose" placeholder="请输入用途" />
+  </a-form-item>
       </a-form>
     </a-modal>
 
@@ -91,11 +103,26 @@
 >
   <a-form :model="editModelForm" layout="vertical" :rules="modelRules" ref="editModelFormRef">
     <a-form-item label="型号名称" name="model" required>
-      <a-input v-model:value="editModelForm.model" placeholder="请输入型号名称" />
-    </a-form-item>
-    <a-form-item label="注册名称" name="registrationname" required>
-      <a-input v-model:value="editModelForm.registrationname" placeholder="请输入注册名称" />
-    </a-form-item>
+    <a-input v-model:value="editModelForm.model" placeholder="请输入型号名称" />
+  </a-form-item>
+  <a-form-item label="注册名称" name="productName" required>
+    <a-input v-model:value="editModelForm.productName" placeholder="请输入注册名称" />
+  </a-form-item>
+  <a-form-item label="类别" name="category" required>
+    <a-input v-model:value="editModelForm.category" placeholder="请输入类别" />
+  </a-form-item>
+  <a-form-item label="类型" name="type" required>
+    <a-input v-model:value="editModelForm.type" placeholder="请输入类型" />
+  </a-form-item>
+  <a-form-item label="空重 (kg)" name="emptyWeight" required>
+    <a-input-number v-model:value="editModelForm.emptyWeight" placeholder="请输入空重" style="width: 100%" />
+  </a-form-item>
+  <a-form-item label="最大起飞重量 (kg)" name="maxTakeoffWeight" required>
+    <a-input-number v-model:value="editModelForm.maxTakeoffWeight" placeholder="请输入最大起飞重量" style="width: 100%" />
+  </a-form-item>
+  <a-form-item label="用途" name="purpose" required>
+    <a-input v-model:value="editModelForm.purpose" placeholder="请输入用途" />
+  </a-form-item>
   </a-form>
 </a-modal>
 
@@ -128,11 +155,11 @@
         >
           <template #bodyCell="{ column, record }">
             <!-- 自定义是否允许飞行列 -->
-            <template v-if="column.key === 'allowflight'">
+            <template v-if="column.key === 'allowFlight'">
               <div>
-                <span :style="{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', marginRight: '8px', backgroundColor: record.allowflight ? 'green' : 'red' }"></span>
+                <span :style="{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', marginRight: '8px', backgroundColor: record.allowFlight ? 'green' : 'red' }"></span>
                 <a-button  @click="toggleFlightStatus(record)">
-                  {{ record.allowflight ? '允许飞行' : '禁止飞行' }}
+                  {{ record.allowFlight ? '允许飞行' : '禁止飞行' }}
                 </a-button>
               </div>
             </template>
@@ -211,15 +238,27 @@ const editManufacturerForm =ref({
 
 const modelForm = ref({
   model: '',
-  registrationname: '',
-  allowflight: false,
+  productName: '',
+  allowFlight: false,
+  manufacturer: '',
+  category:'',
+  type:'',
+  emptyWeight:'',
+  maxTakeoffWeight:'',
+  purpose:'',
   manufacturerid: ''
 });
 
 const editModelForm = ref({
   model: '',
-  registrationname: '',
-  allowflight: false,
+  productName: '',
+  allowFlight: false,
+  manufacturer: '',
+  category:'',
+  type:'',
+  emptyWeight:'',
+  maxTakeoffWeight:'',
+  purpose:'',
   manufacturerid: ''
 });
 
@@ -232,10 +271,20 @@ const manufacturerColumns = [
 
 const modelColumns = [
   { title: '型号名称', dataIndex: 'model', key: 'model' },
-  { title: '注册名称', dataIndex: 'registrationname', key: 'registrationname' },
-  { title: '是否允许飞行', dataIndex: 'allowflight', key: 'allowflight', scopedSlots: { customRender: 'allowflight' } },
+  { title: '注册名称', dataIndex: 'productName', key: 'productName' },
+  { title: '是否允许飞行', dataIndex: 'allowFlight', key: 'allowFlight', scopedSlots: { customRender: 'allowFlight' } },
   { title: '操作', key: 'operation', scopedSlots: { customRender: 'operation' } },
 ];
+const modelRules = {
+  model: [{ required: true, message: '请输入型号名称' }],
+  productName: [{ required: true, message: '请输入注册名称' }],
+  category: [{ required: true, message: '请输入类别' }],
+  type: [{ required: true, message: '请输入类型' }],
+  emptyWeight: [{ required: true, type: 'number', message: '请输入空重' }],
+  maxTakeoffWeight: [{ required: true, type: 'number', message: '请输入最大起飞重量' }],
+  purpose: [{ required: true, message: '请输入用途' }]
+};
+
 
 
 function loadManufacturers() {
@@ -265,7 +314,7 @@ function loadDroneTypes(manufacturerName, record) {
       record.models = res.data.droneTypes.map((model, index) => ({
         ...model,
         key: index,
-        allowflight: model.allowflight // 确保 allowflight 是布尔值
+        allowFlight: model.allowFlight // 确保 allowflight 是布尔值
       }));
     } else {
       // 处理没有型号数据的情况
@@ -391,11 +440,11 @@ async function deleteModel(record) {
 
 
 function toggleFlightStatus(record) {
-  record.allowflight = !record.allowflight;
+  record.allowFlight = !record.allowFlight;
   axios.get(`${httpUrl}/dronetypes/modAllowflight`,{
     params:{
       model:record.model,
-      allowflight:record.allowflight
+      allowFlight:record.allowFlight
     }
   }).then(response => {
     if(response.data){
@@ -565,7 +614,7 @@ function handleEditModelOk() {
       const saveData = {
         dronetypeid,
         model: editModelForm.value.model,
-        registrationname: editModelForm.value.registrationname,
+        productName: editModelForm.value.productName,
       };
 
       // 执行保存请求

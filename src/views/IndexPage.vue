@@ -48,7 +48,7 @@
  
      <!-- 页脚 -->
      <a-layout-footer class="footer">
-       无人机备案系统 2024 Created by YourName
+       无人机备案系统 2024 Created by Victor Kuo
      </a-layout-footer>
    </a-layout>
 </template>
